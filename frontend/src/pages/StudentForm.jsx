@@ -1,11 +1,10 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import API from "../services/api";
-import Sidebar from "../components/Sidebar";
+import Layout from "../components/Layout";
 
 import {
   Box,
-  Flex,
   Input,
   Button,
   Text,
@@ -49,12 +48,12 @@ export default function Studentsform() {
   const [form, setForm] = useState(initialState);
   const [loading, setLoading] = useState(false);
 
-  // 🔄 HANDLE INPUT
+  /* 🔄 HANDLE INPUT */
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // 🚀 ADD STUDENT
+  /* 🚀 ADD STUDENT */
   const addStudent = async () => {
     if (!form.candidateName || !form.contact || !form.course) {
       return toast({
@@ -72,7 +71,7 @@ export default function Studentsform() {
         form,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // 🔥 IMPORTANT
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -83,9 +82,8 @@ export default function Studentsform() {
         duration: 2000,
       });
 
-      setForm(initialState); // reset form
+      setForm(initialState);
     } catch (err) {
-      console.log(err.response);
       toast({
         title: err.response?.data || "Error adding student",
         status: "error",
@@ -96,28 +94,21 @@ export default function Studentsform() {
   };
 
   return (
-    <Flex minH="100vh" flexDir={{ base: "column", md: "row" }}>
-      
-      {/* 🔹 SIDEBAR */}
+    <Layout>
       <Box
-        w={{ base: "100%", md: "250px" }}
-        bg="gray.900"
-        color="white"
+        p={{ base: 4, md: 8 }}
+        bgGradient="linear(to-br, gray.100, teal.50)"
+        minH="calc(100vh - 70px)"
       >
-        <Sidebar />
-      </Box>
-
-      {/* 🔹 CONTENT */}
-      <Box flex="1" bg="gray.100" p={{ base: 3, md: 6 }}>
-        
-        <Heading mb={6} fontSize={{ base: "lg", md: "2xl" }}>
+        <Heading mb={6} fontSize={{ base: "xl", md: "2xl" }}>
           🎓 Student Registration
         </Heading>
 
         <Box bg="white" p={{ base: 4, md: 6 }} rounded="2xl" shadow="lg">
-
           {/* BASIC INFO */}
-          <Text fontWeight="bold" mb={3}>Basic Info</Text>
+          <Text fontWeight="bold" mb={3}>
+            Basic Info
+          </Text>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={6}>
             <Input name="candidateName" value={form.candidateName} placeholder="Candidate Name" onChange={handleChange} />
             <Input name="candidateId" value={form.candidateId} placeholder="Candidate ID" onChange={handleChange} />
@@ -133,7 +124,9 @@ export default function Studentsform() {
           </SimpleGrid>
 
           {/* CONTACT */}
-          <Text fontWeight="bold" mb={3}>Contact Info</Text>
+          <Text fontWeight="bold" mb={3}>
+            Contact Info
+          </Text>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={6}>
             <Input name="contact" value={form.contact} placeholder="Contact Number" onChange={handleChange} />
             <Input name="alternateMobile" value={form.alternateMobile} placeholder="Alternate Mobile" onChange={handleChange} />
@@ -141,7 +134,9 @@ export default function Studentsform() {
           </SimpleGrid>
 
           {/* EDUCATION */}
-          <Text fontWeight="bold" mb={3}>Education</Text>
+          <Text fontWeight="bold" mb={3}>
+            Education
+          </Text>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={6}>
             <Input name="education" value={form.education} placeholder="Education" onChange={handleChange} />
             <Input name="higherQualification" value={form.higherQualification} placeholder="Higher Qualification" onChange={handleChange} />
@@ -158,7 +153,9 @@ export default function Studentsform() {
           </SimpleGrid>
 
           {/* FAMILY */}
-          <Text fontWeight="bold" mb={3}>Family Info</Text>
+          <Text fontWeight="bold" mb={3}>
+            Family Info
+          </Text>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={6}>
             <Input name="fatherName" value={form.fatherName} placeholder="Father Name" onChange={handleChange} />
             <Input name="motherName" value={form.motherName} placeholder="Mother Name" onChange={handleChange} />
@@ -166,7 +163,9 @@ export default function Studentsform() {
           </SimpleGrid>
 
           {/* ADDRESS */}
-          <Text fontWeight="bold" mb={3}>Address</Text>
+          <Text fontWeight="bold" mb={3}>
+            Address
+          </Text>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} mb={6}>
             <Input name="address" value={form.address} placeholder="Address" onChange={handleChange} />
             <Input name="state" value={form.state} placeholder="State" onChange={handleChange} />
@@ -175,7 +174,9 @@ export default function Studentsform() {
           </SimpleGrid>
 
           {/* EXTRA */}
-          <Text fontWeight="bold" mb={3}>Other Details</Text>
+          <Text fontWeight="bold" mb={3}>
+            Other Details
+          </Text>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
             <Input name="aadhar" value={form.aadhar} placeholder="Aadhar No" onChange={handleChange} />
             <Input name="pancard" value={form.pancard} placeholder="PAN Card" onChange={handleChange} />
@@ -204,6 +205,6 @@ export default function Studentsform() {
           </Button>
         </Box>
       </Box>
-    </Flex>
+    </Layout>
   );
 }

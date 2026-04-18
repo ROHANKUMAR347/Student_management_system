@@ -1,7 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import API from "../services/api";
-import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -20,9 +19,11 @@ import {
   InputGroup,
   InputLeftElement,
   Icon,
+  Badge,
 } from "@chakra-ui/react";
 
 import { FiSearch, FiEye, FiTrash2 } from "react-icons/fi";
+import Layout from "../components/Layout";
 
 export default function StudentData() {
   const { token } = useContext(AuthContext);
@@ -67,115 +68,216 @@ export default function StudentData() {
   );
 
   return (
-    <Flex minH="100vh" flexDir={{ base: "column", md: "row" }}>
-      
-      {/* SIDEBAR */}
-      <Box w={{ base: "100%", md: "250px" }} bg="gray.900" color="white">
-        <Sidebar />
-      </Box>
-
-      {/* MAIN */}
-      <Box flex="1" bg="gray.100" p={{ base: 3, md: 6 }}>
-        
-        {/* HEADER */}
+    <Layout>
+      <Box
+        p={{ base: 4, md: 8 }}
+        bgGradient="linear(to-br, gray.100, teal.50)"
+        minH="calc(100vh - 70px)"
+      >
+        {/* 🔝 HEADER */}
         <Flex
           justify="space-between"
           align={{ base: "flex-start", md: "center" }}
           flexDir={{ base: "column", md: "row" }}
-          gap={3}
+          gap={4}
           mb={6}
         >
-          <Heading fontSize={{ base: "lg", md: "2xl" }}>
+          <Heading fontSize={{ base: "xl", md: "2xl" }}>
             📋 Student Records
           </Heading>
 
-          <InputGroup maxW={{ base: "100%", md: "300px" }}>
+          <InputGroup maxW={{ base: "100%", md: "320px" }}>
             <InputLeftElement pointerEvents="none">
               <Icon as={FiSearch} color="gray.400" />
             </InputLeftElement>
 
             <Input
-              placeholder="Search name or ID"
+              placeholder="Search name or ID..."
               bg="white"
+              borderRadius="full"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </InputGroup>
         </Flex>
 
-        {/* TABLE */}
+        {/* 📦 CARD CONTAINER */}
         <Box
           bg="white"
-          p={{ base: 3, md: 5 }}
-          rounded="xl"
-          shadow="md"
-          overflowX="auto"
+          p={{ base: 3, md: 6 }}
+          rounded="2xl"
+          shadow="lg"
         >
+          {/* ❌ NO DATA */}
           {filtered.length === 0 ? (
             <Text textAlign="center" py={10} color="gray.500">
               No students found 😔
             </Text>
           ) : (
-            <Table size="sm">
-              <Thead bg="gray.100">
-                <Tr>
-                  <Th>Name</Th>
-                  <Th>ID</Th>
-                  <Th display={{ base: "none", md: "table-cell" }}>
-                    Course
-                  </Th>
-                  <Th>Contact</Th>
-                  <Th display={{ base: "none", md: "table-cell" }}>
-                    Gender
-                  </Th>
-                  <Th textAlign="center">Actions</Th>
-                </Tr>
-              </Thead>
-
-              <Tbody>
+            <>
+              {/* 📱 MOBILE VIEW (CARD) */}
+              <Box display={{ base: "block", md: "none" }}>
                 {filtered.map((s) => (
-                  <Tr key={s._id} _hover={{ bg: "gray.50" }}>
-                    <Td fontWeight="medium">{s.candidateName}</Td>
-                    <Td>{s.candidateId}</Td>
-                    <Td display={{ base: "none", md: "table-cell" }}>
-                      {s.course}
-                    </Td>
-                    <Td>{s.contact}</Td>
-                    <Td display={{ base: "none", md: "table-cell" }}>
-                      {s.gender}
-                    </Td>
+                  <Box
+                    key={s._id}
+                    p={4}
+                    mb={4}
+                    bg="gray.50"
+                    rounded="xl"
+                    shadow="sm"
+                    _hover={{
+                      transform: "translateY(-4px)",
+                      shadow: "md",
+                    }}
+                    transition="all 0.25s ease"
+                  >
+                    <Text fontWeight="bold" fontSize="md">
+                      {s.candidateName}
+                    </Text>
 
-                    <Td>
-                      <Flex gap={2} justify="center">
-                        {/* VIEW */}
-                        <Button
-                          size="xs"
-                          colorScheme="blue"
-                          onClick={() => navigate(`/student/${s._id}`)}
-                        >
-                          <FiEye />
-                        </Button>
+                    <Text fontSize="sm" color="gray.600">
+                      ID: {s.candidateId}
+                    </Text>
 
-                        {/* DELETE */}
-                        <Button
-                          size="xs"
-                          colorScheme="red"
-                          onClick={() => {
-                            if (!window.confirm("Delete this student?")) return;
-                            deleteStudent(s._id);
-                          }}
-                        >
-                          <FiTrash2 />
-                        </Button>
-                      </Flex>
-                    </Td>
-                  </Tr>
+                    <Text fontSize="sm">
+                      📞 {s.contact}
+                    </Text>
+
+                    <Flex mt={2} gap={2}>
+                      <Badge colorScheme="teal">{s.course}</Badge>
+                      <Badge colorScheme="purple">{s.gender}</Badge>
+                    </Flex>
+
+                    <Flex mt={3} gap={2}>
+                      <Button
+                        size="sm"
+                        colorScheme="blue"
+                        variant="outline"
+                        flex="1"
+                        onClick={() => navigate(`/student/${s._id}`)}
+                      >
+                        <FiEye />
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        colorScheme="red"
+                        variant="outline"
+                        flex="1"
+                        onClick={() => {
+                          if (!window.confirm("Delete this student?"))
+                            return;
+                          deleteStudent(s._id);
+                        }}
+
+                        _hover={{
+                          transform: "scale(1.05)",
+                        }}
+                        transition="0.2s"
+                      >
+                        <FiTrash2 />
+                      </Button>
+                    </Flex>
+                  </Box>
                 ))}
-              </Tbody>
-            </Table>
+              </Box>
+
+              {/* 💻 DESKTOP TABLE */}
+              <Box
+                display={{ base: "none", md: "block" }}
+                w="100%"
+                overflowX="auto"
+                sx={{
+                  "&::-webkit-scrollbar": { height: "6px" },
+                  "&::-webkit-scrollbar-thumb": {
+                    background: "#CBD5E0",
+                    borderRadius: "24px",
+                  },
+                }}
+              >
+                <Table variant="simple" size="md" minW="700px">
+                  <Thead bg="gray.100">
+                    <Tr>
+                      <Th>Name</Th>
+                      <Th>ID</Th>
+                      <Th>Course</Th>
+                      <Th>Contact</Th>
+                      <Th>Gender</Th>
+                      <Th textAlign="center">Actions</Th>
+                    </Tr>
+                  </Thead>
+
+                  <Tbody>
+                    {filtered.map((s) => (
+                      <Tr
+                        key={s._id}
+                        _hover={{
+                          bg: "gray.50",
+                          transform: "scale(1.01)",
+                          boxShadow: "md",
+                        }}
+                        transition="all 0.2s ease"
+                      >
+                        <Td fontWeight="semibold">
+                          {s.candidateName}
+                        </Td>
+                        <Td>{s.candidateId}</Td>
+                        <Td>
+                          <Badge colorScheme="teal">
+                            {s.course}
+                          </Badge>
+                        </Td>
+                        <Td>{s.contact}</Td>
+                        <Td>
+                          <Badge colorScheme="purple">
+                            {s.gender}
+                          </Badge>
+                        </Td>
+
+                        <Td>
+                          <Flex gap={2} justify="center">
+                            <Button
+                              size="sm"
+                              colorScheme="blue"
+                              variant="outline"
+                              borderRadius="full"
+                              onClick={() =>
+                                navigate(`/student/${s._id}`)
+                              }
+                            >
+                              <FiEye />
+                            </Button>
+
+                            <Button
+                              size="sm"
+                              colorScheme="red"
+                              variant="outline"
+                              borderRadius="full"
+                              onClick={() => {
+                                if (!window.confirm("Delete this student?"))
+                                  return;
+                                deleteStudent(s._id);
+                              }}
+                              _hover={{
+                                backgroundColor:"red",
+                                color:"white",
+                                transform: "scale(1.05)",
+                              }}
+                              transition="0.2s"
+                            >
+                              <FiTrash2 />
+                            </Button>
+                          </Flex>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </Box>
+            </>
           )}
         </Box>
       </Box>
-    </Flex>
+    </Layout>
   );
 }

@@ -16,6 +16,7 @@ import {
 import API from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 import Sidebar from "../components/Sidebar";
+import Layout from "../components/Layout";
 
 export default function EditStudent() {
   const { id } = useParams();
@@ -85,13 +86,8 @@ export default function EditStudent() {
   }
 
   return (
-    <Flex minH="100vh" direction={{ base: "column", md: "row" }}>
-      
-      {/* SIDEBAR */}
-      <Box w={{ base: "100%", md: "260px" }} bg="gray.900">
-        <Sidebar />
-      </Box>
-
+    
+      <Layout>
       {/* MAIN */}
       <Box flex="1" bg="gray.100" p={6}>
         <Heading mb={6}>✏ Edit Student</Heading>
@@ -159,6 +155,6 @@ export default function EditStudent() {
           </Button>
         </Box>
       </Box>
-    </Flex>
+    </Layout>
   );
 }

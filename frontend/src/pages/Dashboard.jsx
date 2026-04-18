@@ -1,6 +1,4 @@
-
-
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Text,
@@ -8,9 +6,8 @@ import {
   Flex,
   Spinner,
   Center,
-  Button,
-  Avatar,
 } from "@chakra-ui/react";
+
 import { FiUsers, FiUserPlus, FiDatabase } from "react-icons/fi";
 import {
   BarChart,
@@ -22,50 +19,50 @@ import {
 } from "recharts";
 
 import API from "../services/api";
-import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+import Layout from "../components/Layout";
 
+/* 🔹 CARD COMPONENT */
 const Card = ({ title, value, icon }) => (
   <Flex
-    p={5}
-    bg="white"
-    borderRadius="xl"
+    p={6}
+    borderRadius="2xl"
+    bg="whiteAlpha.800"
+    backdropFilter="blur(12px)"
     boxShadow="lg"
     justify="space-between"
     align="center"
-    _hover={{ transform: "translateY(-4px)", boxShadow: "xl" }}
     transition="0.3s"
+    _hover={{
+      transform: "translateY(-6px) scale(1.02)",
+      boxShadow: "2xl",
+    }}
   >
     <Box>
       <Text fontSize="sm" color="gray.500">
         {title}
       </Text>
-      <Text fontSize="2xl" fontWeight="bold">
+      <Text fontSize="3xl" fontWeight="bold">
         {value}
       </Text>
     </Box>
 
-    <Box fontSize="30px" color="teal.500">
+    <Box
+      fontSize="34px"
+      color="white"
+      bg="teal.500"
+      p={3}
+      borderRadius="full"
+    >
       {icon}
     </Box>
   </Flex>
 );
 
 export default function Dashboard() {
-  const { token, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔐 Logout
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
-  // 📡 Fetch Data
+  /* 📡 FETCH STUDENTS */
   const fetchStudents = async () => {
     try {
       const res = await API.get("/students");
@@ -81,7 +78,7 @@ export default function Dashboard() {
     fetchStudents();
   }, []);
 
-  // 📊 Monthly Chart Data
+  /* 📊 MONTHLY DATA */
   const monthlyData = Object.values(
     students.reduce((acc, student) => {
       const month = new Date(student.createdAt).toLocaleString("default", {
@@ -95,106 +92,80 @@ export default function Dashboard() {
     }, {})
   );
 
-  // 📅 Last 7 Days
+  /* 📅 LAST 7 DAYS */
   const recentStudents = students.filter(
     (s) =>
       new Date(s.createdAt) >
       new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   );
 
-  // ⏳ Loading
+  /* ⏳ LOADING */
   if (loading) {
     return (
-      <Center h="100vh">
-        <Spinner size="xl" />
-      </Center>
+      <Layout>
+        <Center h="70vh">
+          <Spinner size="xl" thickness="4px" color="teal.400" />
+        </Center>
+      </Layout>
     );
   }
 
   return (
-    <Flex minH="100vh" direction={{ base: "column", md: "row" }}>
-      {/* 🔹 SIDEBAR */}
-      <Box w={{ base: "100%", md: "260px" }} bg="gray.900" color="white">
-        <Sidebar />
-      </Box>
+    <Layout>
+      {/* 📦 CONTENT */}
+      <Box
+        p={{ base: 4, md: 8 }}
+        bgGradient="linear(to-br, gray.100, teal.50)"
+        minH="calc(100vh - 70px)"
+      >
+        <Text fontSize="3xl" fontWeight="bold" mb={6}>
+          Welcome Back 👋
+        </Text>
 
-      {/* 🔹 MAIN CONTENT */}
-      <Box flex="1" bg="gray.100">
-        {/* 🔝 TOP BAR */}
-        <Flex
-          bg="white"
-          p={4}
-          justify="space-between"
-          align="center"
-          boxShadow="sm"
+        {/* 📊 CARDS */}
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+          <Card
+            title="Total Students"
+            value={students.length}
+            icon={<FiUsers />}
+          />
+
+          <Card
+            title="New (Last 7 Days)"
+            value={recentStudents.length}
+            icon={<FiUserPlus />}
+          />
+
+          <Card
+            title="Total Records"
+            value={students.length}
+            icon={<FiDatabase />}
+          />
+        </SimpleGrid>
+
+        {/* 📈 CHART */}
+        <Box
+          mt={10}
+          p={6}
+          borderRadius="2xl"
+          bg="whiteAlpha.900"
+          backdropFilter="blur(10px)"
+          boxShadow="lg"
         >
-          <Text fontWeight="bold" fontSize="xl">
-            Dashboard
+          <Text mb={4} fontWeight="bold" fontSize="lg">
+            Students Growth (Monthly)
           </Text>
 
-          <Flex align="center" gap={3}>
-            <Avatar size="sm" />
-
-            {token ? (
-              <Button size="sm" colorScheme="red" onClick={handleLogout}>
-                Logout
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                colorScheme="blue"
-                onClick={() => navigate("/login")}
-              >
-                Login
-              </Button>
-            )}
-          </Flex>
-        </Flex>
-
-        {/* 📦 CONTENT */}
-        <Box p={6}>
-          <Text fontSize="2xl" fontWeight="bold" mb={6}>
-            Welcome Back 👋
-          </Text>
-
-          {/* 📊 CARDS */}
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-            <Card
-              title="Total Students"
-              value={students.length}
-              icon={<FiUsers />}
-            />
-
-            <Card
-              title="New (Last 7 Days)"
-              value={recentStudents.length}
-              icon={<FiUserPlus />}
-            />
-
-            <Card
-              title="Total Records"
-              value={students.length}
-              icon={<FiDatabase />}
-            />
-          </SimpleGrid>
-
-          {/* 📈 CHART */}
-          <Box mt={10} bg="white" p={5} borderRadius="xl" boxShadow="lg">
-            <Text mb={4} fontWeight="bold">
-              Students Growth (Monthly)
-            </Text>
-
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={monthlyData}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" />
-              </BarChart>
-            </ResponsiveContainer>
-          </Box>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={monthlyData}>
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </Box>
       </Box>
-    </Flex>
+    </Layout>
   );
 }
