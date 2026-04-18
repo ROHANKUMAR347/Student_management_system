@@ -112,9 +112,9 @@ export default function Dashboard() {
   }
 
   return (
-    <Flex minH="100vh"   flexDir={{ base: "column", md: "row" }}>
+    <Flex minH="100vh" direction={{ base: "column", md: "row" }}>
       {/* 🔹 SIDEBAR */}
-      <Box w={{ base: "70px", md: "250px" }} bg="gray.900" color="white">
+      <Box w={{ base: "100%", md: "260px" }} bg="gray.900" color="white">
         <Sidebar />
       </Box>
 
